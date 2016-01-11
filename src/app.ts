@@ -1,4 +1,5 @@
 import {Component} from 'angular2/core';
+import {Http, RequestOptionsArgs, Headers} from 'angular2/http';
 import 'rxjs/operator/map';
 
 @Component({
@@ -10,8 +11,9 @@ export class AppComponent {
     isPushEnabled = false;
     buttonDisabled = false;
     buttonText = 'Enable Push Messages';
+    endpoint = 'https://android.googleapis.com/gcm/send';
 
-    constructor() {
+    constructor(private _http: Http) {
         // Check that service workers are supported, if so, progressively  
         // enhance and add push messaging support, otherwise continue without it.  
         if ('serviceWorker' in navigator) {
@@ -20,6 +22,15 @@ export class AppComponent {
         } else {
             console.warn('Service workers aren\'t supported in this browser.');
         }
+    }
+    
+    testNotification() {
+        var headers = new Headers([{'Authorization': 'key=AIzaSyCgZok4Dz7qe4A5wJPDJfq8eitMHWjYCoU'}, {'Content-Type': 'application/json'}, {'Origin': 'https://notification-app.azurewebsites.net'}]);
+        var options: RequestOptionsArgs = {headers: headers};
+        var registrationId = window.localStorage.getItem('registrationId');
+        this._http.post(this.endpoint, '{"registration_ids":["' + registrationId + '"]}', options).subscribe((observer) => {
+            console.log(observer);
+        });
     }
 
     subscribeOrUnsubscribe() {
@@ -70,6 +81,7 @@ export class AppComponent {
 
                     // Keep your server in sync with the latest subscriptionId
                     //sendSubscriptionToServer(subscription);
+                    this.saveToken(subscription);
                     console.log('Subscription:');
                     console.log(subscription);
 
@@ -101,6 +113,7 @@ export class AppComponent {
                     // TODO: Send the subscription.endpoint to your server  
                     // and save it to send a push message at a later date
                     //return sendSubscriptionToServer(subscription);
+                    this.saveToken(subscription);
                 })
                 .catch((e) => {
                     if (Notification.permission === 'denied') {  
@@ -120,5 +133,13 @@ export class AppComponent {
                     }
                 });
         });
+    }
+
+    saveToken(subscription) {
+        if (subscription.endpoint.indexOf(this.endpoint) === 0) {
+            var subscriptionParts = subscription.endpoint.split('/')
+            var registrationId = subscriptionParts[subscriptionParts.length - 1];
+            window.localStorage.setItem('registrationId', registrationId);
+        }
     }
 }
