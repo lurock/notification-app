@@ -140,6 +140,7 @@ export class AppComponent {
             var subscriptionParts = subscription.endpoint.split('/')
             var registrationId = subscriptionParts[subscriptionParts.length - 1];
             window.localStorage.setItem('registrationId', registrationId);
+            document.querySelector('#token').textContent = registrationId;
         }
     }
 }
