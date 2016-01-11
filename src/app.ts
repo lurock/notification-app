@@ -8,7 +8,7 @@ import 'rxjs/operator/map';
 })
 export class AppComponent {
     isPushEnabled = false;
-    buttonDisabled = true;
+    buttonDisabled = false;
     buttonText = 'Enable Push Messages';
 
     constructor() {
@@ -16,7 +16,7 @@ export class AppComponent {
         // enhance and add push messaging support, otherwise continue without it.  
         if ('serviceWorker' in navigator) {
             (<any>navigator).serviceWorker.register('/service-worker.js')
-                .then(this.initialiseState);
+                .then(() => this.initialiseState());
         } else {
             console.warn('Service workers aren\'t supported in this browser.');
         }
@@ -32,6 +32,7 @@ export class AppComponent {
     
     // Once the service worker is registered set the initial state  
     initialiseState() {  
+        
         // Are Notifications supported in the service worker?  
         if (!('showNotification' in ServiceWorkerRegistration.prototype)) {
             console.warn('Notifications aren\'t supported.');
@@ -53,10 +54,10 @@ export class AppComponent {
         }
 
         // We need the service worker registration to check for a subscription  
-        navigator.serviceWorker.ready.then(function(serviceWorkerRegistration) {  
+        navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {  
             // Do we already have a push message subscription?  
             serviceWorkerRegistration.pushManager.getSubscription()
-                .then(function(subscription) {  
+                .then((subscription) => {  
                     // Enable any UI which subscribes / unsubscribes from  
                     // push messages.  
                     this.buttonDisabled = false;
@@ -76,7 +77,7 @@ export class AppComponent {
                     // push messages  
                     this.buttonDisabled = true;
                 })
-                .catch(function(err) {
+                .catch((err) => {
                     console.warn('Error during getSubscription()', err);
                 });
         });
@@ -87,9 +88,9 @@ export class AppComponent {
         // we process the permission request  
         this.buttonDisabled = true;
 
-        (<any>navigator).serviceWorker.ready.then(function(serviceWorkerRegistration) {
-            serviceWorkerRegistration.pushManager.subscribe()
-                .then(function(subscription) {  
+        (<any>navigator).serviceWorker.ready.then((serviceWorkerRegistration) => {
+            serviceWorkerRegistration.pushManager.subscribe({ userVisibleOnly: true })
+                .then((subscription) => {  
                     // The subscription was successful  
                     this.isPushEnabled = true;
                     this.buttonText = 'Disable Push Messages';
@@ -101,7 +102,7 @@ export class AppComponent {
                     // and save it to send a push message at a later date
                     //return sendSubscriptionToServer(subscription);
                 })
-                .catch(function(e) {
+                .catch((e) => {
                     if (Notification.permission === 'denied') {  
                         // The user denied the notification permission which  
                         // means we failed to subscribe and the user will need  
