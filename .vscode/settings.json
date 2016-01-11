@@ -1,0 +1,11 @@
+{
+	"files.exclude": {
+		"node_modules": {},
+		"remote_dependencies": {},
+		"typings/": {},
+		"**/*.map": {},
+		"**/*.js": {
+			"when": "$(basename).ts"
+		}
+	}
+}
