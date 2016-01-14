@@ -25,10 +25,10 @@ export class AppComponent {
     }
     
     testNotification() {
-        var headers = new Headers([{'Authorization': 'key=AIzaSyCgZok4Dz7qe4A5wJPDJfq8eitMHWjYCoU'}, {'Content-Type': 'application/json'}, {'Origin': 'https://notification-app.azurewebsites.net'}]);
+        var headers = new Headers([ {'Content-Type': 'application/json'}, {'Origin': 'https://notification-app.azurewebsites.net'}]);
         var options: RequestOptionsArgs = {headers: headers};
         var registrationId = window.localStorage.getItem('registrationId');
-        this._http.post(this.endpoint, '{"registration_ids":["' + registrationId + '"]}', options).subscribe((observer) => {
+        this._http.post("http://notification-server.azurewebsites.net/api/PushNotifications", '"' + registrationId + '"', options).subscribe((observer) => {
             console.log(observer);
         });
     }
