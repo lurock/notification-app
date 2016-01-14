@@ -25,10 +25,11 @@ export class AppComponent {
     }
     
     testNotification() {
-        var headers = new Headers([ {'Content-Type': 'application/json'}, {'Origin': 'https://notification-app.azurewebsites.net'}]);
+        var headers = new Headers([{'Origin': 'https://notification-app.azurewebsites.net'}]);
+        headers.append('Content-Type', 'application/json');
         var options: RequestOptionsArgs = {headers: headers};
         var registrationId = window.localStorage.getItem('registrationId');
-        this._http.post("http://notification-server.azurewebsites.net/api/PushNotifications", '"' + registrationId + '"', options).subscribe((observer) => {
+        this._http.post("https://notification-server.azurewebsites.net/api/PushNotifications", '"' + registrationId + '"', options).subscribe((observer) => {
             console.log(observer);
         });
     }
@@ -140,7 +141,6 @@ export class AppComponent {
             var subscriptionParts = subscription.endpoint.split('/')
             var registrationId = subscriptionParts[subscriptionParts.length - 1];
             window.localStorage.setItem('registrationId', registrationId);
-            document.querySelector('#token').textContent = registrationId;
         }
     }
 }
